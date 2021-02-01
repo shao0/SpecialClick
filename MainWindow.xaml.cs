@@ -46,7 +46,7 @@ namespace SpecialClick
             mh = new MouseHook();
             mh.SetHook();
             mh.MouseUpEvent += MhOnMouseUpEvent;
-            mh.MouseDownEvent += MhOnMouseUpEvent;
+            //mh.MouseDownEvent += MhOnMouseUpEvent;
             Closed += (o, args) =>
             {
                 mh.UnHook();
@@ -56,8 +56,7 @@ namespace SpecialClick
         private void MhOnMouseUpEvent(object sender, MouseEventArgs e)
         {
             var p = e.Location;
-            for (int i = 0; i < 5
-                ; i++)
+            for (int i = 0; i < 8; i++)
             {
                 CreateSpecial(p.X, p.Y);
             }
@@ -97,13 +96,15 @@ namespace SpecialClick
             _Grid.Children.Add(rectangle);
             var sizeAnimation = new DoubleAnimation
             {
-                Duration = TimeSpan.FromMilliseconds(_Random.Next(100, 500)), From = 0, To = _Random.Next(40, 61)
+                Duration = TimeSpan.FromMilliseconds(_Random.Next(100, 500)),
+                From = 0,
+                To = _Random.Next(40, 61)
             };
             Storyboard.SetTargetProperty(sizeAnimation, new PropertyPath("Width"));
-            var opacityAnimation = new DoubleAnimation {From = 1, To = 0, Duration = sizeAnimation.Duration};
+            var opacityAnimation = new DoubleAnimation { From = 1, To = 0, Duration = sizeAnimation.Duration };
             Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
             var storyBoard = new Storyboard();
-                
+
             storyBoard.Children.Add(sizeAnimation);
             storyBoard.Children.Add(opacityAnimation);
             storyBoard.Completed += (o, args) => { _Grid.Children.Remove(rectangle); };

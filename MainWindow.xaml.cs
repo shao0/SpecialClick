@@ -94,19 +94,38 @@ namespace SpecialClick
             transformGroup.Children.Add(translate);
             rectangle.RenderTransform = transformGroup;
             _Grid.Children.Add(rectangle);
-            var sizeAnimation = new DoubleAnimation
+            var time = TimeSpan.FromMilliseconds(_Random.Next(100, 500));
+            var w = _Random.Next(40, 61);
+            DoubleAnimationUsingKeyFrames sizeDoubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames();
+            sizeDoubleAnimationUsingKeyFrames.KeyFrames = new DoubleKeyFrameCollection();
+            sizeDoubleAnimationUsingKeyFrames.KeyFrames.Add(new LinearDoubleKeyFrame
             {
-                Duration = TimeSpan.FromMilliseconds(_Random.Next(100, 500)),
-                From = 0,
-                To = _Random.Next(40, 61)
-            };
-            Storyboard.SetTargetProperty(sizeAnimation, new PropertyPath("Width"));
-            var opacityAnimation = new DoubleAnimation { From = 1, To = 0, Duration = sizeAnimation.Duration };
-            Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath("Opacity"));
+                Value = 0,
+                KeyTime = TimeSpan.FromMilliseconds(0),
+            });
+            sizeDoubleAnimationUsingKeyFrames.KeyFrames.Add(new LinearDoubleKeyFrame
+            {
+                Value = w,
+                KeyTime = time,
+            });
+            Storyboard.SetTargetProperty(sizeDoubleAnimationUsingKeyFrames, new PropertyPath("Width"));
+            DoubleAnimationUsingKeyFrames opacityDoubleAnimationUsingKeyFrames = new DoubleAnimationUsingKeyFrames();
+            opacityDoubleAnimationUsingKeyFrames.KeyFrames = new DoubleKeyFrameCollection();
+            opacityDoubleAnimationUsingKeyFrames.KeyFrames.Add(new LinearDoubleKeyFrame
+            {
+                Value = 1,
+                KeyTime = TimeSpan.FromMilliseconds(0),
+            });
+            opacityDoubleAnimationUsingKeyFrames.KeyFrames.Add(new LinearDoubleKeyFrame
+            {
+                Value = 0,
+                KeyTime = time,
+            });
+            Storyboard.SetTargetProperty(opacityDoubleAnimationUsingKeyFrames, new PropertyPath("Opacity"));
             var storyBoard = new Storyboard();
 
-            storyBoard.Children.Add(sizeAnimation);
-            storyBoard.Children.Add(opacityAnimation);
+            storyBoard.Children.Add(sizeDoubleAnimationUsingKeyFrames);
+            storyBoard.Children.Add(opacityDoubleAnimationUsingKeyFrames);
             storyBoard.Completed += (o, args) => { _Grid.Children.Remove(rectangle); };
             rectangle.BeginStoryboard(storyBoard);
         }

@@ -10,8 +10,9 @@
     Background="Transparent"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
+    StateChanged="Window_OnStateChanged"
     Topmost="True"
-    WindowState="Maximized" StateChanged="Window_OnStateChanged"
+    WindowState="Maximized"
     WindowStyle="None"
     mc:Ignorable="d">
     <Grid Name="_Grid" Background="Transparent" />

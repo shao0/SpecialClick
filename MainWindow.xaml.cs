@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -21,20 +21,51 @@ using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 namespace SpecialClick
 {
     /// <summary>
-    /// MainWindow.xaml 的交互逻辑
+    /// 主窗口类 - 实现特殊点击效果功能
+    /// 继承自 Window 类，处理鼠标点击事件并创建动画效果
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// 主窗口构造函数
+        /// 初始化窗口组件并设置加载事件
+        /// </summary>
+        /// <remarks>
+        /// 伪代码:
+        /// 1. 调用 InitializeComponent() 初始化界面组件
+        /// 2. 绑定 Loaded 事件到 OnLoaded 方法
+        /// </remarks>
         public MainWindow()
         {
             InitializeComponent();
             Loaded += OnLoaded;
         }
 
+        // 定义私有成员变量
+        // _Timer: 用于定时器功能（当前已禁用）
+        // _Random: 用于生成随机数
+        // _Api: Win32 API 实例
+        // mh: 鼠标钩子实例
         private DispatcherTimer _Timer;
         private Random _Random;
         private Win32Api _Api;
         private MouseHook mh;
+        
+        /// <summary>
+        /// 窗口加载完成时的事件处理方法
+        /// 初始化各种组件和钩子
+        /// </summary>
+        /// <param name="sender">事件发送对象</param>
+        /// <param name="e">路由事件参数</param>
+        /// <remarks>
+        /// 伪代码:
+        /// 1. 创建 Win32Api 实例
+        /// 2. 创建 Random 实例
+        /// 3. 初始化鼠标钩子
+        /// 4. 设置鼠标钩子事件处理程序
+        /// 5. 设置窗口关闭时的清理操作
+        /// 6. 调用 HideAltTab() 隐藏窗口从 Alt+Tab 列表
+        /// </remarks>
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _Api = new Win32Api();
@@ -55,6 +86,18 @@ namespace SpecialClick
             HideAltTab();
         }
 
+        /// <summary>
+        /// 鼠标按键抬起事件处理方法
+        /// 在鼠标位置创建多个特殊效果元素
+        /// </summary>
+        /// <param name="sender">事件发送对象</param>
+        /// <param name="e">鼠标事件参数</param>
+        /// <remarks>
+        /// 伪代码:
+        /// 1. 获取鼠标当前位置
+        /// 2. 循环 8 次，每次在鼠标位置附近创建一个特殊效果元素
+        /// 3. 调用 CreateSpecial 方法创建效果
+        /// </remarks>
         private void MhOnMouseUpEvent(object sender, MouseEventArgs e)
         {
             var p = e.Location;
@@ -64,6 +107,18 @@ namespace SpecialClick
             }
         }
 
+        /// <summary>
+        /// 定时器触发事件处理方法（当前已禁用）
+        /// 用于处理鼠标持续按下时的效果
+        /// </summary>
+        /// <param name="sender">事件发送对象</param>
+        /// <param name="e">事件参数</param>
+        /// <remarks>
+        /// 伪代码:
+        /// 1. 检查鼠标左键是否被按下
+        /// 2. 获取当前鼠标位置
+        /// 3. 调用 CreateSpecial 方法创建效果
+        /// </remarks>
         private void TimerOnTick(object sender,
             EventArgs e)
         {
@@ -75,6 +130,24 @@ namespace SpecialClick
             //CreateSpecial(mousePosition);
         }
 
+        /// <summary>
+        /// 创建特殊效果元素
+        /// 在指定位置创建带动画的矩形元素
+        /// </summary>
+        /// <param name="x">X 坐标位置</param>
+        /// <param name="y">Y 坐标位置</param>
+        /// <remarks>
+        /// 伪代码:
+        /// 1. 创建随机偏移向量
+        /// 2. 计算实际显示位置
+        /// 3. 创建矩形元素并设置样式
+        /// 4. 设置变换（平移）效果
+        /// 5. 添加到网格容器
+        /// 6. 创建大小动画效果
+        /// 7. 创建透明度动画效果
+        /// 8. 设置动画完成时移除元素
+        /// 9. 开始播放动画
+        /// </remarks>
         private void CreateSpecial(double x, double y)
         {
             Vector mouseVector = new Vector(x, y);
@@ -131,6 +204,18 @@ namespace SpecialClick
             storyBoard.Completed += (o, args) => { _Grid.Children.Remove(rectangle); };
             rectangle.BeginStoryboard(storyBoard);
         }
+        
+        /// <summary>
+        /// 隐藏窗口从 Alt+Tab 切换列表中
+        /// 通过设置窗口扩展样式实现
+        /// </summary>
+        /// <remarks>
+        /// 伪代码:
+        /// 1. 获取窗口句柄
+        /// 2. 获取当前扩展窗口样式
+        /// 3. 添加 WS_EX_TOOLWINDOW 样式
+        /// 4. 应用新的窗口样式
+        /// </remarks>
         private void HideAltTab()
         {
             var windowInterop = new WindowInteropHelper(this);
@@ -139,6 +224,18 @@ namespace SpecialClick
             SetWindowLong(windowInterop.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
 
+        /// <summary>
+        /// 窗口状态改变事件处理方法
+        /// 强制窗口保持最大化状态
+        /// </summary>
+        /// <param name="sender">事件发送对象</param>
+        /// <param name="e">事件参数</param>
+        /// <remarks>
+        /// 伪代码:
+        /// 1. 检查当前窗口状态是否为最大化
+        /// 2. 如果不是最大化，则设置为最大化状态
+        /// 3. 激活窗口以确保其获得焦点
+        /// </remarks>
         private void Window_OnStateChanged(object sender, EventArgs e)
         {
             if (WindowState == WindowState.Maximized) return;
